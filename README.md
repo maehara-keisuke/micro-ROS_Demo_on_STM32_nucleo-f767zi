@@ -198,7 +198,7 @@ micro-ROSに同梱されているpublisher exampleは，指定回数ループで
 
 ```sh
 cd firmware/apps/exmaples/publisher
-git clone https://github.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/firmware/apps/exmaples/publisher/publisher_main.patch
+wget https://raw.githubusercontent.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/master/firmware/apps/examples/publisher/publisher_main.patch
 patch publisher_main.c publisher_main.patch
 ```
 
