@@ -207,7 +207,7 @@ patch publisher_main.c publisher_main.patch
 
 ### ファームウェアのビルドと書き込み
 
-12. ファーウェアのビルド
+12. ファームウェアのビルド
 
 ```sh
 cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/
