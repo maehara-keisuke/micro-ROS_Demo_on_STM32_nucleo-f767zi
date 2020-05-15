@@ -172,7 +172,7 @@ libatomicの追加．
 cp firmware/NuttX/configs/olimex-stm32-e407/src/libatomic.c firmware/NuttX/configs/nucleo-144/src
 ```
 
-firmware/NuttX/configs/nucleo-144/Makefileにlibatomic.cのエントリを追加する．
+firmware/NuttX/configs/nucleo-144/src/Makefileにlibatomic.cのエントリを追加する．
 
 ```Makefile
 CSRCS = stm32_boot.c libatomic.c
