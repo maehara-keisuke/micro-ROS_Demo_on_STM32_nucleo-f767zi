@@ -11,6 +11,8 @@ note : Sorry, this document is written in Japanese.
 ## ゴールイメージ
 ![goal image](https://github.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/blob/images/micro-ROS_Demo_on_STM32_nucleo-f767zi.gif)
 
+nucleo boardは剥き出しだと裏面のピンがチクチクするので，スマホのバンパーケースみたいなものをFusion360でモデリングして，3Dプリントサービスで造形してみた．塗装していないので色ムラがあるが，強度や質感は良い感じである．これだけで随分取り回しやすくなった．
+
 ## チュートリアル
 
 ### Micro-ROS configuration for NuttX
