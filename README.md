@@ -9,6 +9,7 @@ note : Sorry, this document is written in Japanese.
 環境としてUbuntu18.04(amd64)を用いる．なお，クロスコンパイルのためのツールチェーンやフラッシュメモリへの書き込みツール，およびMicro XRCE-DDS Agentのインストールは済んでいるものとし，本チュートリアルでは説明しない．
 
 ## ゴールイメージ
+![goal image](https://github.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/blob/images/micro-ROS_Demo_on_STM32_nucleo-f767zi.gif)
 
 ## チュートリアル
 
