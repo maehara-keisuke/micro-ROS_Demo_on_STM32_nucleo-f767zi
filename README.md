@@ -108,7 +108,7 @@ git reset --hard 34ed379e4a838201e1bfe36325074c1629db2372
 7. Micro-ROS Configuration
 
 ```sh
-cd firmware/NuttX
+cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/firmware/NuttX
 make menuconfig
 ```
 
@@ -169,6 +169,7 @@ endif
 libatomicの追加．
 
 ```sh
+cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/
 cp firmware/NuttX/configs/olimex-stm32-e407/src/libatomic.c firmware/NuttX/configs/nucleo-144/src
 ```
 
@@ -187,7 +188,7 @@ CSRCS = stm32_boot.c libatomic.c
 
 システム起動時にボタンデバイスを登録するコードが抜けていたので，他のボードを参考に書いたパッチを適用する．
 ```sh
-cd firmware/NuttX/configs/nucleo-144/src
+cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/firmware/NuttX/configs/nucleo-144/src
 wget https://raw.githubusercontent.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/master/firmware/NuttX/configs/nucleo-144/src/stm32_appinitialize.patch
 patch stm32_appinitialize.c stm32_appinitialize.patch
 ```
@@ -197,7 +198,7 @@ patch stm32_appinitialize.c stm32_appinitialize.patch
 micro-ROSに同梱されているpublisher exampleは，指定回数ループでagentにtopicを送りつけるものである．またNuttXに同梱されているbuttons exampleはボタンを押す or 離すといったイベントを待ち受け，イベントが発生するとコンソールに表示するものである．publisher exampleにbuttons exampleのコードを付け加えることで，ボタンのイベントが発生するたびにagentにtopicを送りつけるように改造した．
 
 ```sh
-cd firmware/apps/exmaples/publisher
+cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/firmware/apps/exmaples/publisher
 wget https://raw.githubusercontent.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/master/firmware/apps/examples/publisher/publisher_main.patch
 patch publisher_main.c publisher_main.patch
 ```
@@ -207,6 +208,7 @@ patch publisher_main.c publisher_main.patch
 12. ファーウェアのビルド
 
 ```sh
+cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/
 ros2 run micro_ros_setup build_firmware.sh
 ```
 
@@ -240,6 +242,12 @@ publisher
 ホストPCの側で別のターミナルを立ち上げ，topicが見えているか確認する．
 
 ```sh
+# ROS2 Dashing Diademataを公式のチュートリアルに従ってソースからビルドしている場合の例
+source ros2_dashing/install/setup.bash
+
+# aptからバイナリインストールしている場合の例
+source /opt/ros/dashing/setup.bash
+
 ros2 topic list
 /parameter_events
 /rosout
