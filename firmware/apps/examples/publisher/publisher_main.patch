@@ -1,0 +1,260 @@
+--- publisher_main.c	2020-05-04 18:42:36.668119000 +0900
++++ modified/publisher_main.c	2020-05-15 21:24:04.416107164 +0900
+@@ -4,12 +4,212 @@
+ #include <std_msgs/msg/int32.h>
+ #include <stdio.h>
+ 
++#include <sys/ioctl.h>
++#include <stdbool.h>
++#include <stdlib.h>
++#include <string.h>
++#include <poll.h>
++#include <fcntl.h>
++#include <sched.h>
++#include <errno.h>
++
++#include <nuttx/input/buttons.h>
++
++/****************************************************************************
++ * Pre-processor Definitions
++ ****************************************************************************/
++
++#ifndef CONFIG_BUTTONS
++#  error "CONFIG_BUTTONS is not defined in the configuration"
++#endif
++
++#if defined(CONFIG_DISABLE_SIGNALS) && defined(CONFIG_DISABLE_POLL)
++#  error "You need at least SIGNALS or POLL support to read buttons"
++#endif
++
++#if !defined(CONFIG_DISABLE_SIGNALS) && !defined(CONFIG_DISABLE_POLL)
++#  define USE_NOTIFY_SIGNAL 1
++#else
++#  define USE_NOTIFY_POLL 1
++#endif
++
++#ifndef CONFIG_BUTTONS_NPOLLWAITERS
++#  define CONFIG_BUTTONS_NPOLLWAITERS 2
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_SIGNO
++#  define CONFIG_EXAMPLES_BUTTONS_SIGNO 13
++#endif
++
++#ifndef CONFIG_BUTTONS_POLL_DELAY
++#  define CONFIG_BUTTONS_POLL_DELAY 1000
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_NAME0
++#  define CONFIG_EXAMPLES_BUTTONS_NAME0 "BUTTON0"
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_NAME1
++#  define CONFIG_EXAMPLES_BUTTONS_NAME1 "BUTTON1"
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_NAME2
++#  define CONFIG_EXAMPLES_BUTTONS_NAME2 "BUTTON2"
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_NAME3
++#  define CONFIG_EXAMPLES_BUTTONS_NAME3 "BUTTON3"
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_NAME4
++#  define CONFIG_EXAMPLES_BUTTONS_NAME4 "BUTTON4"
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_NAME5
++#  define CONFIG_EXAMPLES_BUTTONS_NAME5 "BUTTON5"
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_NAME6
++#  define CONFIG_EXAMPLES_BUTTONS_NAME6 "BUTTON6"
++#endif
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_NAME7
++#  define CONFIG_EXAMPLES_BUTTONS_NAME7 "BUTTON7"
++#endif
++
++#define BUTTON_MAX 8
++
++#ifndef CONFIG_EXAMPLES_BUTTONS_QTD
++#  define CONFIG_EXAMPLES_BUTTONS_QTD BUTTON_MAX
++#endif
++
++#if CONFIG_EXAMPLES_BUTTONS_QTD > 8
++#  error "CONFIG_EXAMPLES_BUTTONS_QTD > 8"
++#endif
++
++/****************************************************************************
++ * Private Data
++ ****************************************************************************/
++
++#ifdef CONFIG_EXAMPLES_BUTTONS_NAMES
++static const char button_name[CONFIG_EXAMPLES_BUTTONS_QTD][16] =
++{
++  CONFIG_EXAMPLES_BUTTONS_NAME0
++#if CONFIG_EXAMPLES_BUTTONS_QTD > 1
++  , CONFIG_EXAMPLES_BUTTONS_NAME1
++#endif
++#if CONFIG_EXAMPLES_BUTTONS_QTD > 2
++  , CONFIG_EXAMPLES_BUTTONS_NAME2
++#endif
++#if CONFIG_EXAMPLES_BUTTONS_QTD > 3
++  , CONFIG_EXAMPLES_BUTTONS_NAME3
++#endif
++#if CONFIG_EXAMPLES_BUTTONS_QTD > 4
++  , CONFIG_EXAMPLES_BUTTONS_NAME4
++#endif
++#if CONFIG_EXAMPLES_BUTTONS_QTD > 5
++  , CONFIG_EXAMPLES_BUTTONS_NAME5
++#endif
++#if CONFIG_EXAMPLES_BUTTONS_QTD > 6
++  , CONFIG_EXAMPLES_BUTTONS_NAME6
++#endif
++#if CONFIG_EXAMPLES_BUTTONS_QTD > 7
++  , CONFIG_EXAMPLES_BUTTONS_NAME7
++#endif
++};
++#endif
++
++static bool g_button_daemon_started;
++
++//////////////////////////////////////////////////////////////////////////////////
++
+ #if defined(BUILD_MODULE)
+ int main(int argc, char *argv[])
+ #else
+ int publisher_main(int argc, char* argv[])
+ #endif
+ {
++
++#ifdef USE_NOTIFY_POLL
++  struct pollfd fds[CONFIG_BUTTONS_NPOLLWAITERS];
++#endif
++
++#ifdef USE_NOTIFY_SIGNAL
++  struct btn_notify_s btnevents;
++#endif
++
++  btn_buttonset_t supported;
++  btn_buttonset_t sample = 0;
++
++#ifdef CONFIG_EXAMPLES_BUTTONS_NAMES
++  btn_buttonset_t oldsample = 0;
++#endif
++
++  int ret;
++  int fd;
++  int i;
++
++  UNUSED(i);
++
++#ifdef USE_NOTIFY_SIGNAL
++      struct siginfo value;
++      sigset_t set;
++#endif
++
++#ifdef USE_NOTIFY_POLL
++      bool timeout;
++      bool pollin;
++      int nbytes;
++#endif
++
++  /* Open the BUTTON driver */
++
++  printf("button_daemon: Opening %s\n", CONFIG_EXAMPLES_BUTTONS_DEVPATH);
++  fd = open(CONFIG_EXAMPLES_BUTTONS_DEVPATH, O_RDONLY|O_NONBLOCK);
++  if (fd < 0)
++    {
++      int errcode = errno;
++      printf("button_daemon: ERROR: Failed to open %s: %d\n",
++             CONFIG_EXAMPLES_BUTTONS_DEVPATH, errcode);
++      return EXIT_FAILURE;
++    }
++
++  /* Get the set of BUTTONs supported */
++
++  ret = ioctl(fd, BTNIOC_SUPPORTED,
++              (unsigned long)((uintptr_t)&supported));
++  if (ret < 0)
++    {
++      int errcode = errno;
++      printf("button_daemon: ERROR: ioctl(BTNIOC_SUPPORTED) failed: %d\n",
++             errcode);
++      (void)close(fd);
++    }
++
++  printf("button_daemon: Supported BUTTONs 0x%02x\n", (unsigned int)supported);
++
++#ifdef USE_NOTIFY_SIGNAL
++  /* Define the notifications events */
++
++  btnevents.bn_press   = supported;
++  btnevents.bn_release = supported;
++
++  btnevents.bn_event.sigev_notify = SIGEV_SIGNAL;
++  btnevents.bn_event.sigev_signo  = CONFIG_EXAMPLES_BUTTONS_SIGNO;
++
++  /* Register to receive a signal when buttons are pressed/released */
++
++  ret = ioctl(fd, BTNIOC_REGISTER,
++              (unsigned long)((uintptr_t)&btnevents));
++  if (ret < 0)
++    {
++      int errcode = errno;
++      printf("button_daemon: ERROR: ioctl(BTNIOC_SUPPORTED) failed: %d\n",
++             errcode);
++      (void)close(fd);
++    }
++#endif
++
+     rcl_ret_t rv;
+ 
+     rcl_init_options_t options = rcl_get_zero_initialized_init_options();
+@@ -42,15 +242,42 @@
+         return 1;
+     }
+ 
++    int button_event_counter = 0;
++
+     std_msgs__msg__Int32 msg;
+-    const int num_msg = 1000;
++    const int num_msg = 100;
+     msg.data = 0;
+     usleep(3000000); // As we are sending low number mensajes we need to wait discovery of the subscriber. (Do not have a notification on discovery)
+     do {
++
++#ifdef USE_NOTIFY_SIGNAL
++        /* Wait for a signal */
++        (void)sigemptyset(&set);
++        (void)sigaddset(&set, CONFIG_EXAMPLES_BUTTONS_SIGNO);
++        ret = sigwaitinfo(&set, &value);
++        if (ret < 0)
++          {
++            int errcode = errno;
++            printf("button_daemon: ERROR: sigwaitinfo() failed: %d\n", errcode);
++            (void)close(fd);
++          }
++        sample = (btn_buttonset_t)value.si_value.sival_int;
++#endif
++
++        if(sample == 0){
++          printf("Button Released.\n");
++        }
++        else if(sample == 1){
++          printf("Button Pressed.\n");
++        }
++
++        button_event_counter++;
++        msg.data = button_event_counter;
++
+         rv = rcl_publish(&publisher, (const void*)&msg, NULL);
+         if (RCL_RET_OK == rv )
+         {
+-            printf("Sent: '%i'\n", msg.data++);
++            printf("Published Button Event Counter: %d\n", msg.data);
+         }
+     } while (RCL_RET_OK == rv && msg.data < num_msg );
+     printf("TOTAL sent: %i\n", num_msg);
