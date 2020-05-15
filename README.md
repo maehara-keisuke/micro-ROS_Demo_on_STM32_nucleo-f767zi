@@ -188,7 +188,7 @@ CSRCS = stm32_boot.c libatomic.c
 システム起動時にボタンデバイスを登録するコードが抜けていたので，他のボードを参考に書いたパッチを適用する．
 ```sh
 cd firmware/NuttX/configs/nucleo-144/src
-git clone https://github.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/firmware/NuttX/configs/nucleo-144/src/stm32_appinitialize.patch
+wget https://raw.githubusercontent.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/master/firmware/NuttX/configs/nucleo-144/src/stm32_appinitialize.patch
 patch stm32_appinitialize.c stm32_appinitialize.patch
 ```
 
