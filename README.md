@@ -137,10 +137,10 @@ make menuconfig
 |   |Library Routines > sizeof(_Bool) is a 8-bits|有効|
 |   |Library Routines > Build uClibc++ (must be installed)|有効|
 |add|Application Configuration > NSH Library > Have architecture-specific initialization|有効|
-|add|Application Configuration > Network Configuration > Network initialization > IP Address Configuration > Use DHCP to get IP address|有効|
-|add|Application Configuration > Network Configuration > Network initialization > IP Address Configuration > Router IPv4 address|DHCPサーバとなるルーターのIPアドレスを16進表記で設定|
-|add|Application Configuration > Network Configuration > Network initialization > IP Address Configuration > IPv4 Network mask|ネットマスクを16進表記で設定．大抵の場合はデフォルトの0xffffff00(= 255.255.255.0)で問題ない|
-|add|Application Configuration > Network Configuration > Network initialization > IP Address Configuration > Hardware has no MAC address|有効|
+|add|Application Configuration > NSH Library > Network Configuration > Network initialization > IP Address Configuration > Use DHCP to get IP address|有効|
+|add|Application Configuration > NSH Library > Network Configuration > Network initialization > IP Address Configuration > Router IPv4 address|DHCPサーバとなるルーターのIPアドレスを16進表記で設定|
+|add|Application Configuration > NSH Library > Network Configuration > Network initialization > IP Address Configuration > IPv4 Network mask|ネットマスクを16進表記で設定．大抵の場合はデフォルトの0xffffff00(= 255.255.255.0)で問題ない|
+|add|Application Configuration > NSH Library > Network Configuration > Network initialization > IP Address Configuration > Hardware has no MAC address|有効|
 |   |Application Configuration > micro-ROS|有効|
 |verify|Application Configuration > micro-ROS > Transport > UDP Transport|有効|
 |add|Application Configuration > micro-ROS > IP address of the agent|DDS agentを立ち上げるホストPCのIPアドレスを10進表記で設定|
