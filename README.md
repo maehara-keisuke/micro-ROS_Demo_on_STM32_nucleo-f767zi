@@ -137,10 +137,10 @@ make menuconfig
 |   |Library Routines > sizeof(_Bool) is a 8-bits|有効|
 |   |Library Routines > Build uClibc++ (must be installed)|有効|
 |add|Application Configuration > NSH Library > Have architecture-specific initialization|有効|
-|add|Application Configuration > Network Configuration > Network initialization > IP Address Configuration > Use DHCP to get IP address|有効|
-|add|Application Configuration > Network Configuration > Network initialization > IP Address Configuration > Router IPv4 address|DHCPサーバとなるルーターのIPアドレスを16進表記で設定|
-|add|Application Configuration > Network Configuration > Network initialization > IP Address Configuration > IPv4 Network mask|ネットマスクを16進表記で設定．大抵の場合はデフォルトの0xffffff00(= 255.255.255.0)で問題ない|
-|add|Application Configuration > Network Configuration > Network initialization > IP Address Configuration > Hardware has no MAC address|有効|
+|add|Application Configuration > NSH Library > Network Configuration > Network initialization > IP Address Configuration > Use DHCP to get IP address|有効|
+|add|Application Configuration > NSH Library > Network Configuration > Network initialization > IP Address Configuration > Router IPv4 address|DHCPサーバとなるルーターのIPアドレスを16進表記で設定|
+|add|Application Configuration > NSH Library > Network Configuration > Network initialization > IP Address Configuration > IPv4 Network mask|ネットマスクを16進表記で設定．大抵の場合はデフォルトの0xffffff00(= 255.255.255.0)で問題ない|
+|add|Application Configuration > NSH Library > Network Configuration > Network initialization > IP Address Configuration > Hardware has no MAC address|有効|
 |   |Application Configuration > micro-ROS|有効|
 |verify|Application Configuration > micro-ROS > Transport > UDP Transport|有効|
 |add|Application Configuration > micro-ROS > IP address of the agent|DDS agentを立ち上げるホストPCのIPアドレスを10進表記で設定|
@@ -200,7 +200,7 @@ patch stm32_appinitialize.c stm32_appinitialize.patch
 micro-ROSに同梱されているpublisher exampleは，指定回数ループでagentにtopicを送りつけるものである．またNuttXに同梱されているbuttons exampleはボタンを押す or 離すといったイベントを待ち受け，イベントが発生するとコンソールに表示するものである．publisher exampleにbuttons exampleのコードを付け加えることで，ボタンのイベントが発生するたびにagentにtopicを送りつけるように改造した．
 
 ```sh
-cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/firmware/apps/exmaples/publisher
+cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/firmware/apps/examples/publisher
 wget https://raw.githubusercontent.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/master/firmware/apps/examples/publisher/publisher_main.patch
 patch publisher_main.c publisher_main.patch
 ```
