@@ -227,10 +227,13 @@ st-flash write firmware/NuttX/nuttx.bin 0x8000000
 好みのターミナルアプリでNuttXのシリアルコンソールに接続する．デバイスファイルの名前は通常"/dev/ttyACM0"となり，ボーレートは"115200"を設定する．
 DHCPサーバ機能を持つルータとEthernetケーブルで接続し，いったんボード上のリセットボタンによりシステムをリセットする．IPの配布が正常に行われれば，ターミナルアプリにNuttXのプロンプトが表示される．
 
-ホストPCの側でMicro XRCE-DDS Agentを立ち上げる．
+ホストPCの側でMicro XRCE-DDS Agentを立ち上げる．（v1.3.0以降を使用する場合はIPv6 supportに伴ってSubcommandが変更されている）
 
 ```sh
+# v1.1.6以前の場合
 /usr/local/bin/MicroXRCEAgent udp --port 8888
+# v1.3.0以降の場合
+/usr/local/bin/MicroXRCEAgent udp4 --port 8888
 ```
 
 NuttXのシリアルコンソールでpublisherを実行する
