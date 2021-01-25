@@ -199,8 +199,11 @@ patch stm32_appinitialize.c stm32_appinitialize.patch
 
 micro-ROSに同梱されているpublisher exampleは，指定回数ループでagentにtopicを送りつけるものである．またNuttXに同梱されているbuttons exampleはボタンを押す or 離すといったイベントを待ち受け，イベントが発生するとコンソールに表示するものである．publisher exampleにbuttons exampleのコードを付け加えることで，ボタンのイベントが発生するたびにagentにtopicを送りつけるように改造した．
 
+[ROS Japan UG #36 LT@Google Meet](https://rosjp.connpass.com/event/174104/)の発表後に当該ソースの変更があったため，パッチが当たらなくなっている（[参考情報](https://github.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/pull/1#issuecomment-766349156)）．このため，パッチ適用前に当該ソースのcommitを１つ前のものに戻すようにしている．
+
 ```sh
 cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/firmware/apps/examples/publisher
+git checkout 3ff9fb6d385b7936cd55142f1e77cd654ffafaa2
 wget https://raw.githubusercontent.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/master/firmware/apps/examples/publisher/publisher_main.patch
 patch publisher_main.c publisher_main.patch
 ```
