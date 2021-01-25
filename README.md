@@ -103,7 +103,7 @@ ros2 run micro_ros_setup configure_firmware.sh f767-netnsh
 
 ```sh
 cd firmware/mcu_ws/uros/rmw_microxrcedds
-git reset --hard 34ed379e4a838201e1bfe36325074c1629db2372
+git checkout 34ed379e4a838201e1bfe36325074c1629db2372
 ```
 将来的には，本節の操作は必要なくなる可能性がある．
 
