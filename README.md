@@ -103,7 +103,7 @@ ros2 run micro_ros_setup configure_firmware.sh f767-netnsh
 
 ```sh
 cd firmware/mcu_ws/uros/rmw_microxrcedds
-git reset --hard 34ed379e4a838201e1bfe36325074c1629db2372
+git checkout 34ed379e4a838201e1bfe36325074c1629db2372
 ```
 将来的には，本節の操作は必要なくなる可能性がある．
 
@@ -199,8 +199,11 @@ patch stm32_appinitialize.c stm32_appinitialize.patch
 
 micro-ROSに同梱されているpublisher exampleは，指定回数ループでagentにtopicを送りつけるものである．またNuttXに同梱されているbuttons exampleはボタンを押す or 離すといったイベントを待ち受け，イベントが発生するとコンソールに表示するものである．publisher exampleにbuttons exampleのコードを付け加えることで，ボタンのイベントが発生するたびにagentにtopicを送りつけるように改造した．
 
+[ROS Japan UG #36 LT@Google Meet](https://rosjp.connpass.com/event/174104/)の発表後に当該ソースの変更があったため，パッチが当たらなくなっている（[参考情報](https://github.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/pull/1#issuecomment-766349156)）．このため，パッチ適用前に当該ソースのcommitを１つ前のものに戻すようにしている．
+
 ```sh
 cd ~/uros_ws/nuttx__nucleo-144__f767-netnsh/firmware/apps/examples/publisher
+git checkout 3ff9fb6d385b7936cd55142f1e77cd654ffafaa2
 wget https://raw.githubusercontent.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/master/firmware/apps/examples/publisher/publisher_main.patch
 patch publisher_main.c publisher_main.patch
 ```
@@ -227,10 +230,13 @@ st-flash write firmware/NuttX/nuttx.bin 0x8000000
 好みのターミナルアプリでNuttXのシリアルコンソールに接続する．デバイスファイルの名前は通常"/dev/ttyACM0"となり，ボーレートは"115200"を設定する．
 DHCPサーバ機能を持つルータとEthernetケーブルで接続し，いったんボード上のリセットボタンによりシステムをリセットする．IPの配布が正常に行われれば，ターミナルアプリにNuttXのプロンプトが表示される．
 
-ホストPCの側でMicro XRCE-DDS Agentを立ち上げる．
+ホストPCの側でMicro XRCE-DDS Agentを立ち上げる．（v1.3.0以降を使用する場合はIPv6 supportに伴ってSubcommandが変更されている）
 
 ```sh
+# v1.1.6以前の場合
 /usr/local/bin/MicroXRCEAgent udp --port 8888
+# v1.3.0以降の場合
+/usr/local/bin/MicroXRCEAgent udp4 --port 8888
 ```
 
 NuttXのシリアルコンソールでpublisherを実行する
