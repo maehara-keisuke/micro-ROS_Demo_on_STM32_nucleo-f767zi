@@ -4,9 +4,18 @@ note : Sorry, this document is written in Japanese.
 ## このリポジトリについて
 [ROS Japan UG #36 LT@Google Meet](https://rosjp.connpass.com/event/174104/)にて"micro-ROS Demo on STM32 nucleo-f767zi"というタイトルで発表した内容を補完し，nucleo-f767ziを所持している方が追試できるようにするために，パッチの公開とチュートリアルを示すためのリポジトリである．
 
-パッチの中身についてはほぼmicro-ROSのソースファイル由来のものであるので，基本的なライセンス条項はそれを継承するものとする．
-
 環境としてUbuntu18.04(amd64)を用いる．なお，クロスコンパイルのためのツールチェーンやフラッシュメモリへの書き込みツール，およびMicro XRCE-DDS Agentのインストールは済んでいるものとし，本チュートリアルでは説明しない．
+
+### ライセンス
+~~パッチの中身についてはほぼmicro-ROSのソースファイル由来のものであるので，基本的なライセンス条項はそれを継承するものとする．~~
+
+パッチの中身のコードは下記リポジトリにほぼ由来する．
+
+[NuttXをmicro-ROSプロジェクトがforkしたもの](https://github.com/micro-ROS/NuttX)
+
+[nuttx_appsをmicro-ROSプロジェクトがforkしてexampleなどを追加したもの](https://github.com/micro-ROS/nuttx_apps)
+
+Nuttxの範囲については前者に設定されたライセンスが後者を包含していると考えられるため，これを本リポジトリのライセンスとして設定した．
 
 ## ゴールイメージ
 ![goal image](https://github.com/maehara-keisuke/micro-ROS_Demo_on_STM32_nucleo-f767zi/blob/images/micro-ROS_Demo_on_STM32_nucleo-f767zi.gif)
